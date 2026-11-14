@@ -70,3 +70,48 @@ jobs:
         run: cargo test --workspace
       - name: Release build
         run: cargo build --release -p agentty-app
+      # The built app, started for real: it has to stay up and draw. Screenshots of the first
+      # screen, a terminal and a few pages are uploaded with the run (nobody watches a runner's
+      # screen, and macOS is the only platform built and looked at locally).
+      - name: Smoke run (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install -y -qq --no-install-recommends xvfb imagemagick mesa-vulkan-drivers \
+            netcat-openbsd fonts-dejavu-core fonts-noto-cjk fonts-noto-color-emoji >/dev/null
+          xvfb-run -a -s "-screen 0 1600x1000x24" ../gpui/scripts/smoke.sh "$PWD/target/release/agentty" "$RUNNER_TEMP/smoke"
+      - name: Smoke run (macOS)
+        if: runner.os == 'macOS'
+        run: ../gpui/scripts/smoke.sh "$PWD/target/release/agentty" "$RUNNER_TEMP/smoke"
+      - name: Smoke run (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $out = Join-Path $env:RUNNER_TEMP 'smoke'
+          New-Item -ItemType Directory -Force $out | Out-Null
+          $env:AGENTTY_DATA_DIR = Join-Path $out 'data'
+          $app = Start-Process -FilePath target\release\agentty.exe -PassThru `
+            -RedirectStandardOutput (Join-Path $out 'app.out.log') -RedirectStandardError (Join-Path $out 'app.log')
+          Add-Type -AssemblyName System.Windows.Forms, System.Drawing
+          function Shot($name) {
+            $screen = [System.Windows.Forms.SystemInformation]::VirtualScreen
+            $bitmap = New-Object System.Drawing.Bitmap $screen.Width, $screen.Height
+            $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
+            $graphics.CopyFromScreen($screen.Left, $screen.Top, 0, 0, $bitmap.Size)
+            $bitmap.Save((Join-Path $out "$name.png"))
+          }
+          Start-Sleep -Seconds 20
+          if ($app.HasExited) { Get-Content (Join-Path $out 'app.log') -Tail 50; throw "Agentty exited with $($app.ExitCode)" }
+          Shot '01-first-screen'
+          Start-Sleep -Seconds 10
+          if ($app.HasExited) { Get-Content (Join-Path $out 'app.log') -Tail 50; throw "Agentty exited with $($app.ExitCode)" }
+          Shot '02-later'
+          Stop-Process -Id $app.Id -Force
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: smoke-${{ matrix.os }}
+          path: |
+            ${{ runner.temp }}/smoke/*.png
+            ${{ runner.temp }}/smoke/*.log
+          if-no-files-found: warn
+          retention-days: 7
