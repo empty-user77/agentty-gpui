@@ -30,4 +30,4 @@ Unmodified files from [zed-industries/zed](https://github.com/zed-industries/zed
 | `ztracing` | `crates/ztracing` |
 | `ztracing_macro` | `crates/ztracing_macro` |
 
-Also: \`assets/fonts/ibm-plex-sans\` \`assets/fonts/lilex\` 
+Also: \`clippy.toml\` \`rustfmt.toml\` \`assets/fonts/ibm-plex-sans\` \`assets/fonts/lilex\` 
