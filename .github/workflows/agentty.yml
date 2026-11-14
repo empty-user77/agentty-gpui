@@ -1,0 +1,72 @@
+name: Agentty
+
+# Builds and tests Agentty against this checkout of agentty-gpui, on every platform Agentty ships
+# for, before anything is published: run it after a Zed sync or an Agentty patch, with the Agentty
+# branch to try (main once Agentty uses agentty-gpui).
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Agentty branch, tag or commit
+        default: main
+        required: true
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  agentty:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, windows-2025, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: agentty
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: gpui
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: empty-user77/Agentty
+          ref: ${{ inputs.ref }}
+          path: agentty
+          persist-credentials: false
+      - name: System libraries
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends build-essential pkg-config \
+            libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev libx11-xcb-dev libxcb1-dev \
+            libvulkan-dev libfontconfig-dev libfreetype-dev libzstd-dev libsqlite3-dev zsh >/dev/null
+      - name: Install toolchain
+        run: rustup toolchain install
+      - name: Use this agentty-gpui
+        run: |
+          # A Windows path (D:/a/...) on Windows, where cargo is not a Git Bash program.
+          gpui="$(cd ../gpui && (pwd -W 2>/dev/null || pwd))"
+          mkdir -p .cargo
+          {
+            echo '[patch.crates-io]'
+            echo "agentty-gpui = { path = '$gpui/crates/gpui' }"
+            echo "agentty-gpui-platform = { path = '$gpui/crates/gpui_platform' }"
+          } > .cargo/config.toml
+          cat .cargo/config.toml
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          workspaces: agentty
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Clippy without voice
+        run: cargo clippy -p agentty-app -p agentty-bridge -p agentty-db --no-default-features --all-targets -- -D warnings
+      - name: Test
+        run: cargo test --workspace
+      - name: Release build
+        run: cargo build --release -p agentty-app
