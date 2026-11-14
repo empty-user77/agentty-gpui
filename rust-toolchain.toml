@@ -1,0 +1,4 @@
+# Same toolchain as Agentty (Zed v1.28.1 pins 1.98.1).
+[toolchain]
+channel = "1.98.0"
+components = ["rustfmt", "clippy"]

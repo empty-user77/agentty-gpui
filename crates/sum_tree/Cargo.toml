@@ -1,8 +1,10 @@
+# Modified for Agentty by scripts/apply_agentty.py (package name, version, dependencies).
 [package]
-name = "sum_tree"
-version = "0.1.0"
+name = "agentty-gpui-sum-tree"
+repository.workspace = true
+version.workspace = true
 edition.workspace = true
-publish = false
+publish.workspace = true
 license = "Apache-2.0"
 description = "A sum tree data structure, a concurrency-friendly B-tree"
 
@@ -10,6 +12,7 @@ description = "A sum tree data structure, a concurrency-friendly B-tree"
 workspace = true
 
 [lib]
+name = "sum_tree"
 path = "src/sum_tree.rs"
 doctest = false
 
@@ -25,7 +28,7 @@ log.workspace = true
 ctor.workspace = true
 rand.workspace = true
 proptest.workspace = true
-zlog.workspace = true
+zlog = { path = "../zlog", package = "agentty-gpui-zlog" }
 
 
 [package.metadata.cargo-shear]

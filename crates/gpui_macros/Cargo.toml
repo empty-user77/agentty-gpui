@@ -1,8 +1,10 @@
+# Modified for Agentty by scripts/apply_agentty.py (package name, version, dependencies).
 [package]
-name = "gpui_macros"
-version = "0.1.0"
+name = "agentty-gpui-macros"
+repository.workspace = true
+version.workspace = true
 edition.workspace = true
-publish = false
+publish.workspace = true
 license = "Apache-2.0"
 description = "Macros used by gpui"
 
@@ -13,6 +15,7 @@ workspace = true
 inspector = []
 
 [lib]
+name = "gpui_macros"
 path = "src/gpui_macros.rs"
 proc-macro = true
 doctest = true
@@ -25,4 +28,4 @@ quote.workspace = true
 syn = { workspace = true, default-features = true, features = ["full", "extra-traits", "visit-mut"] }
 
 [dev-dependencies]
-gpui = { workspace = true, features = ["inspector"] }
+gpui = { path = "../gpui", package = "agentty-gpui", default-features = false, features = ["inspector"] }

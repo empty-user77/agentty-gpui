@@ -1,3 +1,4 @@
+// Modified for Agentty: find_gpui_crate_dir falls back to the bundled gpui-src/ copy.
 #![allow(clippy::disallowed_methods, reason = "build scripts are exempt")]
 
 fn main() {
@@ -101,8 +102,18 @@ mod apple_build {
     /// Locate the gpui crate directory relative to this crate. Resolved at
     /// build-script runtime against this crate's manifest dir, so no checkout
     /// path is baked into a compiled artifact (which corgi rejects).
+    ///
+    /// Modified for Agentty: inside this workspace that is ../gpui; a crate published to
+    /// crates.io has no ../gpui, so it reads the copy in gpui-src/ (scripts/apply_agentty.py
+    /// keeps it identical to ../gpui).
     fn find_gpui_crate_dir() -> PathBuf {
-        PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").unwrap()).join("../gpui")
+        let manifest_dir = PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").unwrap());
+        let workspace = manifest_dir.join("../gpui");
+        if workspace.join("src/scene.rs").exists() {
+            workspace
+        } else {
+            manifest_dir.join("gpui-src")
+        }
     }
 
     /// To enable runtime compilation, we need to "stitch" the shaders file with the generated header

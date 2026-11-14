@@ -1,8 +1,10 @@
+# Modified for Agentty by scripts/apply_agentty.py (package name, version, dependencies).
 [package]
-name = "refineable"
-version = "0.1.0"
+name = "agentty-gpui-refineable"
+repository.workspace = true
+version.workspace = true
 edition.workspace = true
-publish = false
+publish.workspace = true
 license = "Apache-2.0"
 description = "A macro for creating 'refinement' types that can be used to partially initialize or mutate a complex struct"
 
@@ -10,6 +12,7 @@ description = "A macro for creating 'refinement' types that can be used to parti
 workspace = true
 
 [lib]
+name = "refineable"
 path = "src/refineable.rs"
 doctest = false
 test = false

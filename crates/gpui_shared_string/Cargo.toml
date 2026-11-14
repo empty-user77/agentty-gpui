@@ -1,11 +1,15 @@
+# Modified for Agentty by scripts/apply_agentty.py (package name, version, dependencies).
 [package]
-name = "gpui_shared_string"
-version = "0.1.0"
+name = "agentty-gpui-shared-string"
+description = "Zed's gpui_shared_string crate, as used by agentty-gpui"
+repository.workspace = true
+version.workspace = true
 publish.workspace = true
 edition.workspace = true
 license = "Apache-2.0"
 
 [lib]
+name = "gpui_shared_string"
 path = "gpui_shared_string.rs"
 test = false
 doctest = false

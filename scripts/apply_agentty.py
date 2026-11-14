@@ -34,7 +34,16 @@ CRATES_IO = {
     "oo7": {"version": "0.6"},
     "wgpu": {"version": "30.0.2"},
     "wasm_thread": {"version": "0.3"},
+    # Declared in a crate manifest, not the workspace.
+    "naga": {"version": "30.0.2"},
+    "xim": {},  # already names zed-xim 0.4.0-zed on crates.io
 }
+
+# gpui_apple's build script reads these gpui sources (to generate the Metal shader header).
+# A published crate can't reach ../gpui, so it carries a copy, refreshed here.
+APPLE_GPUI_SOURCES = "crates/gpui_apple/gpui-src"
+
+MANIFEST_NOTE = "# Modified for Agentty by scripts/apply_agentty.py (package name, version, dependencies)."
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 ZED_WORKSPACE = ROOT / "zed" / "zed-workspace.toml"
@@ -162,10 +171,80 @@ def drop_examples(lines: list[str], names: set[str]) -> list[str]:
     return out
 
 
-def edit_crate(crate: str, path: str) -> None:
+def drop_git_sources(lines: list[str]) -> list[str]:
+    """`dep = { git = ..., rev = ..., ... }` in a crate manifest -> its crates.io release."""
+    out = []
+    for line in lines:
+        m = re.match(r'^(\s*)([A-Za-z0-9_-]+)(\s*=\s*\{.*)\bgit\s*=\s*"[^"]*",?\s*', line)
+        if m:
+            dep = m.group(2)
+            if dep not in CRATES_IO:
+                sys.exit(f"error: {dep} comes from Git in a crate manifest; add it to CRATES_IO")
+            line = re.sub(r'\bgit\s*=\s*"[^"]*",?\s*', "", line)
+            line = re.sub(r'\b(rev|branch|tag)\s*=\s*"[^"]*",?\s*', "", line)
+            if "version" in CRATES_IO[dep] and "version" not in line:
+                line = line.replace("{ ", f'{{ version = "{CRATES_IO[dep]["version"]}", ', 1)
+        out.append(line)
+    return out
+
+
+def path_only_dev_dependencies(lines: list[str], crate_dir: str, ours: dict[str, str], zed_deps: dict) -> list[str]:
+    """Dev-dependencies on our own crates by path, without a version.
+
+    `cargo publish` drops such dev-dependencies, which breaks the cycles (gpui_macros tests
+    use gpui, gpui uses gpui_macros) that would otherwise stop the workspace publishing.
+    """
+    out = []
+    for header, start, end in sections(lines):
+        block = lines[start:end]
+        if header.endswith("dev-dependencies]"):
+            new_block = []
+            for line in block:
+                m = re.match(r"^([A-Za-z0-9_-]+)(?:\.workspace\s*=\s*true|\s*=\s*\{(.*)\})\s*$", line)
+                dep = m and m.group(1)
+                if dep in ours:
+                    rest = m.group(2) or ""
+                    if "workspace" not in rest and m.group(2) is not None:
+                        new_block.append(line)  # already path-only
+                        continue
+                    rest = re.sub(r"\bworkspace\s*=\s*true,?\s*", "", rest).strip().rstrip(",")
+                    rel = pathlib.Path(ours[dep]).relative_to(crate_dir, walk_up=True)
+                    spec = f'path = "{rel}", package = "{package_name(dep)}"'
+                    zed_spec = zed_deps.get(dep, {})
+                    if "default-features" in zed_spec and "default-features" not in rest:
+                        spec += f", default-features = {toml_value(zed_spec['default-features'])}"
+                    if rest:
+                        spec += f", {rest}"
+                    line = f"{dep} = {{ {spec} }}"
+                elif re.match(r"^([A-Za-z0-9_-]+)\s*=\s*\{[^}]*$", line) and line.split()[0] in ours:
+                    sys.exit(f"error: multi-line dev-dependency on {line.split()[0]} in {crate_dir}")
+                new_block.append(line)
+            block = new_block
+        out += block
+    return out
+
+
+def copy_apple_gpui_sources() -> None:
+    build = (ROOT / "crates/gpui_apple/build.rs").read_text()
+    files = sorted(set(re.findall(r'gpui_dir\.join\("(src/[^"]+)"\)', build)))
+    if not files:
+        sys.exit("error: gpui_apple/build.rs no longer reads gpui sources; check APPLE_GPUI_SOURCES")
+    target = ROOT / APPLE_GPUI_SOURCES
+    for old in target.rglob("*.rs") if target.exists() else []:
+        if str(old.relative_to(target)) not in files:
+            old.unlink()
+    for rel in files:
+        dest = target / rel
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_bytes((ROOT / "crates/gpui" / rel).read_bytes())
+
+
+def edit_crate(crate: str, path: str, ours: dict[str, str], zed_deps: dict) -> None:
     manifest = ROOT / path / "Cargo.toml"
     lines = manifest.read_text().splitlines()
     package = tomllib.loads(manifest.read_text())["package"]
+    if not lines or lines[0] != MANIFEST_NOTE:
+        lines.insert(0, MANIFEST_NOTE)
 
     lines = set_package_key(lines, "name", f'name = "{package_name(crate)}"')
     lines = set_package_key(lines, "version", "version.workspace = true")
@@ -177,7 +256,12 @@ def edit_crate(crate: str, path: str) -> None:
         )
     lines = ensure_lib_name(lines, crate)
     lines = drop_dependencies(lines)
-    lines = drop_examples(lines, DROPPED_EXAMPLES.get(crate, set()))
+    lines = drop_git_sources(lines)
+    lines = path_only_dev_dependencies(lines, path, ours, zed_deps)
+    if crate in DROPPED_EXAMPLES:
+        lines = drop_examples(lines, DROPPED_EXAMPLES[crate])
+        # Otherwise cargo finds the dropped examples' files again on its own.
+        lines = set_package_key(lines, "autoexamples", "autoexamples = false")
 
     text = "\n".join(lines).rstrip("\n") + "\n"
     tomllib.loads(text)  # still valid TOML
@@ -267,9 +351,11 @@ def write_root(ours: dict[str, str]) -> None:
 def main() -> int:
     crates = snapshot_crates()
     ours = {c: p for c, p in crates.items() if c not in DROPPED}
+    zed_deps = tomllib.loads(ZED_WORKSPACE.read_text())["workspace"]["dependencies"]
     for crate, path in sorted(ours.items()):
-        edit_crate(crate, path)
+        edit_crate(crate, path, ours, zed_deps)
     write_root(ours)
+    copy_apple_gpui_sources()
     print(f"› {len(ours)} crates, version {VERSION}")
     return 0
 

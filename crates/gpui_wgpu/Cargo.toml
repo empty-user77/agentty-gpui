@@ -1,6 +1,9 @@
+# Modified for Agentty by scripts/apply_agentty.py (package name, version, dependencies).
 [package]
-name = "gpui_wgpu"
-version = "0.1.0"
+name = "agentty-gpui-wgpu"
+description = "Zed's gpui_wgpu crate, as used by agentty-gpui"
+repository.workspace = true
+version.workspace = true
 edition.workspace = true
 publish.workspace = true
 license = "Apache-2.0"
@@ -9,6 +12,7 @@ license = "Apache-2.0"
 workspace = true
 
 [lib]
+name = "gpui_wgpu"
 path = "src/gpui_wgpu.rs"
 doctest = false
 
@@ -53,10 +57,10 @@ wgpu = { workspace = true, features = ["webgl"] }
 
 [dev-dependencies]
 criterion.workspace = true
-gpui = { workspace = true, features = ["bench-support"] }
+gpui = { path = "../gpui", package = "agentty-gpui", default-features = false, features = ["bench-support"] }
 image.workspace = true
 # Validate shaders with the same Naga revision that wgpu uses at runtime.
-naga = { git = "https://github.com/gfx-rs/wgpu", rev = "cddb2f5d80dc0009b2ef6767635140cacf90a007", features = ["wgsl-in"] }
+naga = { version = "30.0.2", features = ["wgsl-in"] }
 
 [[bench]]
 name = "layout_line"

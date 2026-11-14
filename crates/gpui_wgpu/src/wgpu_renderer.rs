@@ -1,3 +1,4 @@
+// Modified for Agentty: written against wgpu 30.0.2 from crates.io (Zed builds a newer wgpu from Git).
 use crate::{CompositorGpuHint, DeviceErrorState, WgpuAtlas, WgpuContext};
 use anyhow::{Context as _, Result};
 use bytemuck::{Pod, Zeroable};
@@ -403,7 +404,7 @@ impl WgpuRenderer {
                 surface_caps
                     .formats
                     .iter()
-                    .find(|format| !format.has_srgb_suffix())
+                    .find(|format| !format.is_srgb())
                     .copied()
             })
             .or_else(|| surface_caps.formats.first().copied())

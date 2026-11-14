@@ -1,14 +1,18 @@
+# Modified for Agentty by scripts/apply_agentty.py (package name, version, dependencies).
 [package]
-name = "bench_metrics"
-version = "0.1.0"
+name = "agentty-gpui-bench-metrics"
+description = "Zed's bench_metrics crate, as used by agentty-gpui"
+repository.workspace = true
+version.workspace = true
 edition.workspace = true
-publish = false
+publish.workspace = true
 license = "Apache-2.0"
 
 [lints]
 workspace = true
 
 [lib]
+name = "bench_metrics"
 path = "src/bench_metrics.rs"
 doctest = false
 

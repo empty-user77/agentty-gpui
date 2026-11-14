@@ -1,8 +1,10 @@
+# Modified for Agentty by scripts/apply_agentty.py (package name, version, dependencies).
 [package]
-name = "http_client"
-version = "0.1.0"
+name = "agentty-gpui-http-client"
+repository.workspace = true
+version.workspace = true
 edition.workspace = true
-publish = false
+publish.workspace = true
 license = "Apache-2.0"
 description = "A HTTP client library for Zed and GPUI"
 
@@ -13,6 +15,7 @@ workspace = true
 test-support = ["dep:log"]
 
 [lib]
+name = "http_client"
 path = "src/http_client.rs"
 test = false
 doctest = false

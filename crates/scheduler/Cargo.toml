@@ -1,6 +1,9 @@
+# Modified for Agentty by scripts/apply_agentty.py (package name, version, dependencies).
 [package]
-name = "scheduler"
-version = "0.1.0"
+name = "agentty-gpui-scheduler"
+description = "Zed's scheduler crate, as used by agentty-gpui"
+repository.workspace = true
+version.workspace = true
 edition.workspace = true
 publish.workspace = true
 license = "Apache-2.0"
@@ -9,6 +12,7 @@ license = "Apache-2.0"
 workspace = true
 
 [lib]
+name = "scheduler"
 path = "src/scheduler.rs"
 doctest = false
 

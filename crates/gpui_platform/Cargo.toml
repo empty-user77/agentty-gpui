@@ -1,6 +1,9 @@
+# Modified for Agentty by scripts/apply_agentty.py (package name, version, dependencies).
 [package]
-name = "gpui_platform"
-version = "0.1.0"
+name = "agentty-gpui-platform"
+description = "Zed's gpui_platform crate, as used by agentty-gpui"
+repository.workspace = true
+version.workspace = true
 edition.workspace = true
 publish.workspace = true
 license = "Apache-2.0"
@@ -9,6 +12,7 @@ license = "Apache-2.0"
 workspace = true
 
 [lib]
+name = "gpui_platform"
 path = "src/gpui_platform.rs"
 doctest = false
 
@@ -16,13 +20,13 @@ doctest = false
 default = ["multithreaded"]
 # Threads in the browser: needs a nightly toolchain and a cross-origin-isolated
 # page. Off, gpui_web builds on stable.
-multithreaded = ["gpui_web/multithreaded"]
+multithreaded = []
 bench-support = ["gpui/bench-support", "gpui_macos/bench-support", "gpui_wgpu/bench-support"]
 font-kit = ["gpui_macos/font-kit"]
 inspector = ["gpui/inspector"]
 test-support = ["gpui/test-support", "gpui_macos/test-support", "gpui_windows/test-support", "gpui_wgpu/test-support"]
 screen-capture = ["gpui/screen-capture", "gpui_macos/screen-capture", "gpui_windows/screen-capture", "gpui_linux/screen-capture"]
-runtime_shaders = ["gpui_macos/runtime_shaders", "gpui_ios/runtime_shaders"]
+runtime_shaders = ["gpui_macos/runtime_shaders"]
 wayland = ["gpui_linux/wayland"]
 x11 = ["gpui_linux/x11"]
 
@@ -57,14 +61,13 @@ anyhow.workspace = true
 gpui.workspace = true
 
 [dev-dependencies]
-bench_metrics.workspace = true
+bench_metrics = { path = "../bench_metrics", package = "agentty-gpui-bench-metrics" }
 criterion.workspace = true
 
 [target.'cfg(target_os = "macos")'.dependencies]
 gpui_macos.workspace = true
 
 [target.'cfg(target_os = "ios")'.dependencies]
-gpui_ios.workspace = true
 
 [target.'cfg(target_os = "windows")'.dependencies]
 gpui_windows.workspace = true
@@ -77,5 +80,4 @@ gpui_linux.workspace = true
 gpui_wgpu = { workspace = true, optional = true }
 
 [target.'cfg(target_family = "wasm")'.dependencies]
-gpui_web.workspace = true
 console_error_panic_hook.workspace = true
