@@ -1,0 +1,6 @@
+# CI retries a failed test twice: a few gpui bench tests measure wall-clock time (an 80 ms
+# poll, say) and can miss on a busy shared runner. nextest reports a test that passes on a
+# retry as flaky, so a real failure still fails.
+[profile.ci]
+retries = 2
+fail-fast = false

@@ -54,6 +54,7 @@ crates.io only takes crates.io dependencies. Where Zed builds from Git, we use t
 | `wgpu`, `naga` (Linux) | Git, after 30.0 | 30.0.2 | newer API (`QueueDescriptor`, `has_srgb_suffix`) |
 | `zed-font-kit`, `zed-scap`, `zed-xim` | Git | Zed's crates.io releases | small fixes since |
 | `oo7` (Linux) | Zed fork | 0.6 | an error when the prompt stream ends |
+| `windows-capture` (Windows, `screen-capture`) | Zed fork of 1.4.3 | 1.4.4, held in `Cargo.lock` | — (1.5 no longer builds with `zed-scap`: a dependent enabling `screen-capture` must hold it too) |
 
 ## Files changed from Zed
 
@@ -72,5 +73,7 @@ cargo test --workspace --doc --features agentty-gpui-apple/runtime_shaders
 ```
 
 Use nextest, as Zed does: a few tests read process-wide state and fail when `cargo test` runs
-them side by side. Without `runtime_shaders`, macOS needs Xcode's Metal toolchain
+them side by side. CI uses `--profile ci` (`.config/nextest.toml`), which retries a failed test twice:
+a few bench tests time an 80 ms poll and can miss on a busy runner. Linux CI uses Mesa's software
+Vulkan driver for the wgpu renderer tests. Without `runtime_shaders`, macOS needs Xcode's Metal toolchain
 (`xcodebuild -downloadComponent MetalToolchain`).
