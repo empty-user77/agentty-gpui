@@ -5,7 +5,7 @@
 #
 # `upstream` holds Zed's files untouched: the gpui crates and every Zed workspace crate they
 # depend on (see scripts/upstream_crates.py), at their Zed paths, plus Zed's root manifest and
-# lockfile under upstream/ for reference. One commit per sync. Afterwards merge it into main:
+# lockfile under zed/ for reference. One commit per sync. Afterwards merge it into main:
 #
 #   git merge upstream
 #
@@ -14,6 +14,8 @@ set -euo pipefail
 
 ZED_REPO="https://github.com/zed-industries/zed.git"
 ROOTS=(gpui gpui_platform)
+# Files outside the crates that they read (fonts the text tests load), with their licenses.
+EXTRA=(assets/fonts/ibm-plex-sans assets/fonts/lilex)
 
 tag="${1:-}"
 if [[ -z "$tag" ]]; then
@@ -42,6 +44,7 @@ fi
 echo "› fetching $(wc -l < "$work/crates.tsv" | tr -d ' ') crates"
 patterns=('/Cargo.toml' '/Cargo.lock' '/LICENSE-APACHE')
 while IFS=$'\t' read -r _ dir _; do patterns+=("/$dir/"); done < "$work/crates.tsv"
+for dir in "${EXTRA[@]}"; do patterns+=("/$dir/"); done
 git -C "$work/zed" sparse-checkout set --no-cone "${patterns[@]}"
 
 if git -C "$repo" show-ref -q --verify refs/heads/upstream; then
@@ -52,16 +55,20 @@ fi
 
 tree="$work/tree"
 find "$tree" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
-mkdir -p "$tree/upstream"
+mkdir -p "$tree/zed"
 cp "$work/zed/LICENSE-APACHE" "$tree/LICENSE-APACHE"
-cp "$work/zed/Cargo.toml" "$tree/upstream/zed-workspace.toml"
-cp "$work/zed/Cargo.lock" "$tree/upstream/zed-Cargo.lock"
+cp "$work/zed/Cargo.toml" "$tree/zed/zed-workspace.toml"
+cp "$work/zed/Cargo.lock" "$tree/zed/zed-Cargo.lock"
 while IFS=$'\t' read -r _ dir _; do
   # Copy the contents, so a nested crate (refineable/derive_refineable) and its parent
   # land in the same place whichever comes first.
   mkdir -p "$tree/$dir"
   cp -R "$work/zed/$dir/." "$tree/$dir/"
 done < "$work/crates.tsv"
+for dir in "${EXTRA[@]}"; do
+  mkdir -p "$tree/$dir"
+  cp -R "$work/zed/$dir/." "$tree/$dir/"
+done
 {
   echo "# Upstream snapshot"
   echo
@@ -73,7 +80,9 @@ done < "$work/crates.tsv"
   echo "| crate | path |"
   echo "|---|---|"
   while IFS=$'\t' read -r name dir _; do echo "| \`$name\` | \`$dir\` |"; done < "$work/crates.tsv"
-} > "$tree/upstream/SNAPSHOT.md"
+  echo
+  echo "Also: $(printf '\`%s\` ' "${EXTRA[@]}")"
+} > "$tree/zed/SNAPSHOT.md"
 
 git -C "$tree" add -A
 if git -C "$tree" diff --cached --quiet; then
@@ -81,5 +90,5 @@ if git -C "$tree" diff --cached --quiet; then
   exit 0
 fi
 git -C "$tree" commit -q -m "sync: zed $tag (${commit:0:12})"
-echo "› upstream: $(git -C "$repo" log -1 --format='%h %s' upstream)"
+echo "› upstream: $(git -C "$repo" log -1 --format="%h %s" refs/heads/upstream)"
 echo "  next: git merge upstream"

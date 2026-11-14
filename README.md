@@ -12,7 +12,7 @@ Apache License 2.0; see [LICENSE-APACHE](LICENSE-APACHE). Files changed here say
 
 - **`upstream`** — Zed's files, unmodified: the gpui crates and the Zed workspace crates they
   depend on, at their Zed paths, one commit per Zed release
-  ([`upstream/SNAPSHOT.md`](https://github.com/empty-user77/agentty-gpui/blob/upstream/upstream/SNAPSHOT.md)
+  ([`zed/SNAPSHOT.md`](https://github.com/empty-user77/agentty-gpui/blob/upstream/zed/SNAPSHOT.md)
   names the tag and commit).
 - **`main`** — `upstream` plus Agentty's changes. This is what gets published.
 
