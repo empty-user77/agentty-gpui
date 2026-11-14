@@ -75,5 +75,6 @@ cargo test --workspace --doc --features agentty-gpui-apple/runtime_shaders
 Use nextest, as Zed does: a few tests read process-wide state and fail when `cargo test` runs
 them side by side. CI uses `--profile ci` (`.config/nextest.toml`), which retries a failed test twice:
 a few bench tests time an 80 ms poll and can miss on a busy runner. Linux CI uses Mesa's software
-Vulkan driver for the wgpu renderer tests. Without `runtime_shaders`, macOS needs Xcode's Metal toolchain
+Vulkan driver for the wgpu renderer tests. macOS CI skips `foreground_work_excludes_setup_before_trace_scope_starts`, which
+needs a 10 ms sleep to return within 40 ms and doesn't on GitHub's virtualized Macs. Without `runtime_shaders`, macOS needs Xcode's Metal toolchain
 (`xcodebuild -downloadComponent MetalToolchain`).
