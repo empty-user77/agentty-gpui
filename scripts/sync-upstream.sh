@@ -14,8 +14,9 @@ set -euo pipefail
 
 ZED_REPO="https://github.com/zed-industries/zed.git"
 ROOTS=(gpui gpui_platform)
-# Files outside the crates that they read (fonts the text tests load), with their licenses.
-EXTRA=(assets/fonts/ibm-plex-sans assets/fonts/lilex)
+# Files outside the crates that they need: Zed's lint and format settings, and the fonts the
+# text tests load (with their licenses).
+EXTRA=(clippy.toml rustfmt.toml assets/fonts/ibm-plex-sans assets/fonts/lilex)
 
 tag="${1:-}"
 if [[ -z "$tag" ]]; then
@@ -44,7 +45,7 @@ fi
 echo "› fetching $(wc -l < "$work/crates.tsv" | tr -d ' ') crates"
 patterns=('/Cargo.toml' '/Cargo.lock' '/LICENSE-APACHE')
 while IFS=$'\t' read -r _ dir _; do patterns+=("/$dir/"); done < "$work/crates.tsv"
-for dir in "${EXTRA[@]}"; do patterns+=("/$dir/"); done
+for path in "${EXTRA[@]}"; do patterns+=("/$path"); done
 git -C "$work/zed" sparse-checkout set --no-cone "${patterns[@]}"
 
 if git -C "$repo" show-ref -q --verify refs/heads/upstream; then
@@ -65,9 +66,9 @@ while IFS=$'\t' read -r _ dir _; do
   mkdir -p "$tree/$dir"
   cp -R "$work/zed/$dir/." "$tree/$dir/"
 done < "$work/crates.tsv"
-for dir in "${EXTRA[@]}"; do
-  mkdir -p "$tree/$dir"
-  cp -R "$work/zed/$dir/." "$tree/$dir/"
+for path in "${EXTRA[@]}"; do
+  mkdir -p "$tree/$(dirname "$path")"
+  cp -R "$work/zed/$path" "$tree/$(dirname "$path")/"
 done
 {
   echo "# Upstream snapshot"

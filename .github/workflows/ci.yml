@@ -13,7 +13,8 @@ env:
 
 # GitHub-hosted runners only, no secrets: a pull request from anybody can run here.
 # Tests run under nextest (a process per test), as in Zed: some gpui tests read process-wide
-# state and disturb each other under plain `cargo test`.
+# state and disturb each other under plain `cargo test`. Clippy runs with --all-features, as
+# Zed's script/clippy does: some imports are only used by test-support code.
 jobs:
   manifests:
     runs-on: ubuntu-24.04
@@ -30,8 +31,6 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install toolchain
         run: rustup toolchain install
-      - name: Metal toolchain (shaders are precompiled without runtime_shaders)
-        run: xcodebuild -downloadComponent MetalToolchain
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
       - uses: taiki-e/install-action@cfdb7ed4ccc7c7dce37759eae89dc5674b469b39 # v2.90.3
         with:
@@ -39,9 +38,7 @@ jobs:
       - name: Format
         run: cargo fmt --all -- --check
       - name: Clippy
-        run: cargo clippy --workspace --all-targets -- -D warnings
-      - name: Clippy (runtime shaders, as Agentty builds it)
-        run: cargo clippy --workspace --all-targets --features agentty-gpui-apple/runtime_shaders -- -D warnings
+        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
       - name: Test
         run: cargo nextest run --workspace --no-fail-fast
       - name: Doc tests
@@ -60,7 +57,7 @@ jobs:
         with:
           tool: cargo-nextest
       - name: Clippy
-        run: cargo clippy --workspace --all-targets -- -D warnings
+        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
       - name: Test
         run: cargo nextest run --workspace --no-fail-fast
 
@@ -81,6 +78,6 @@ jobs:
         with:
           tool: cargo-nextest
       - name: Clippy
-        run: cargo clippy --workspace --all-targets -- -D warnings
+        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
       - name: Test
         run: cargo nextest run --workspace --no-fail-fast
