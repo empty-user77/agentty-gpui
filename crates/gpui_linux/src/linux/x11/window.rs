@@ -1,3 +1,4 @@
+// Modified for Agentty: an X11 connection error is reported to the caller, whatever its kind, not a panic.
 use anyhow::{Context as _, anyhow};
 use x11rb::connection::RequestConnection;
 
@@ -444,12 +445,12 @@ pub(crate) fn handle_connection_error(err: ConnectionError) -> anyhow::Error {
             anyhow!("X11 connection: Maximum request length exceeded")
         }
         ConnectionError::FdPassingFailed => {
-            panic!("X11 connection: File descriptor passing failed")
+            anyhow!("X11 connection: File descriptor passing failed")
         }
         ConnectionError::ParseError(parse_error) => {
             anyhow!(parse_error).context("Parse error in X11 response")
         }
-        ConnectionError::InsufficientMemory => panic!("X11 connection: Insufficient memory"),
+        ConnectionError::InsufficientMemory => anyhow!("X11 connection: Insufficient memory"),
         ConnectionError::IoError(err) => anyhow!(err).context("X11 connection: IOError"),
         _ => anyhow!(err),
     }

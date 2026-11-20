@@ -1,3 +1,4 @@
+// Modified for Agentty: a keymap that cannot be read and a window closed twice are logged, not panics.
 use std::{
     cell::{RefCell, RefMut},
     hash::Hash,
@@ -805,7 +806,11 @@ impl WaylandClientStatePtr {
     pub fn drop_window(&self, surface_id: &ObjectId) {
         let client = self.get_client();
         let mut state = client.borrow_mut();
-        let closed_window = state.windows.remove(surface_id).unwrap();
+        // Closed already (a second close for the same surface): nothing is left to drop.
+        let Some(closed_window) = state.windows.remove(surface_id) else {
+            log::error!("a Wayland window was dropped twice");
+            return;
+        };
         if let Some(window) = state.mouse_focused_window.take()
             && !window.ptr_eq(&closed_window)
         {
@@ -2086,7 +2091,12 @@ impl Dispatch<wl_keyboard::WlKeyboard, ()> for WaylandClientStatePtr {
                     )
                     .log_err()
                     .flatten()
-                    .expect("Failed to create keymap")
+                };
+                // A keymap that cannot be mapped or parsed (memory short, a layout the library
+                // does not take): the keys keep the map they had, and the app goes on.
+                let Some(keymap) = keymap else {
+                    log::error!("Failed to create the keymap the compositor sent");
+                    return;
                 };
                 state.keymap_state = Some(xkb::State::new(&keymap));
                 state.compose_state = get_xkb_compose_state(&xkb_context);

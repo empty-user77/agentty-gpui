@@ -1032,16 +1032,24 @@ impl Clipboard {
             self.inner.atoms.UTF8_STRING,
             self.inner.atoms.UTF8_MIME_0,
             self.inner.atoms.UTF8_MIME_1,
+        ];
+        let older_text_format_atoms: &[Atom] = &[
             self.inner.atoms.STRING,
             self.inner.atoms.TEXT,
             self.inner.atoms.TEXT_MIME_UNKNOWN,
         ];
 
-        // image formats first, as they are more specific, and read will return the first
-        // format that the contents can be converted to
-        let mut format_atoms = Vec::with_capacity(image_entries.len() + text_format_atoms.len());
-        format_atoms.extend(image_entries.iter().map(|(atom, _)| *atom));
+        // Modified for Agentty: text first, as on Wayland (see `wayland/clipboard.rs`, which
+        // reads text and falls back to an image). A copy that carries text and a picture of
+        // it (a spreadsheet's cells) is the text; a copied image carries no plain text and is
+        // still read as the image. Zed's order was images first, "as they are more
+        // specific". `read` returns the first of these formats the owner offers.
+        let mut format_atoms = Vec::with_capacity(
+            image_entries.len() + text_format_atoms.len() + older_text_format_atoms.len(),
+        );
         format_atoms.extend_from_slice(text_format_atoms);
+        format_atoms.extend(image_entries.iter().map(|(atom, _)| *atom));
+        format_atoms.extend_from_slice(older_text_format_atoms);
 
         let result = self.inner.read(&format_atoms, selection)?;
 
