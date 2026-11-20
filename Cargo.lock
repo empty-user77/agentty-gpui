@@ -111,7 +111,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "accesskit",
  "agentty-gpui-bench-metrics",
@@ -194,7 +194,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-apple"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "agentty-gpui",
  "agentty-gpui-collections",
@@ -232,7 +232,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-bench-metrics"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "anyhow",
  "criterion",
@@ -242,7 +242,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-collections"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "agentty-gpui-util",
  "indexmap",
@@ -251,7 +251,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-derive-refineable"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -260,7 +260,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-http-client"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "anyhow",
  "bytes",
@@ -277,7 +277,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-linux"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "accesskit",
  "accesskit_unix",
@@ -320,7 +320,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-macos"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "accesskit",
  "accesskit_macos",
@@ -361,7 +361,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-macros"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "agentty-gpui",
  "heck 0.5.0",
@@ -372,7 +372,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-platform"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "agentty-gpui",
  "agentty-gpui-bench-metrics",
@@ -387,14 +387,14 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-refineable"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "agentty-gpui-derive-refineable",
 ]
 
 [[package]]
 name = "agentty-gpui-scheduler"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "async-task",
  "backtrace",
@@ -409,7 +409,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-shared-string"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "schemars",
  "serde",
@@ -418,7 +418,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-sum-tree"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "agentty-gpui-zlog",
  "agentty-gpui-ztracing",
@@ -433,7 +433,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-util"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "anyhow",
  "log",
@@ -442,7 +442,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-wgpu"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "agentty-gpui",
  "agentty-gpui-collections",
@@ -470,7 +470,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-windows"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "accesskit",
  "accesskit_windows",
@@ -499,7 +499,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-zlog"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "agentty-gpui-collections",
  "anyhow",
@@ -510,7 +510,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-ztracing"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "agentty-gpui-zlog",
  "agentty-gpui-ztracing-macro",
@@ -526,7 +526,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-ztracing-macro"
-version = "0.1.0"
+version = "0.1.1"
 
 [[package]]
 name = "ahash"

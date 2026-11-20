@@ -1,3 +1,4 @@
+// Modified for Agentty: a clipboard read that cannot be made (no descriptor left, the connection not taking the request) is no read, not a panic.
 use std::{
     fs::File,
     io::{ErrorKind, Write},
@@ -77,14 +78,26 @@ impl<T: ReceiveData> DataOffer<T> {
     }
 
     fn read_bytes(&self, connection: &Connection, mime_type: &str) -> Option<Vec<u8>> {
-        let pipe = Pipe::new().unwrap();
+        // Out of descriptors (many terminals open): nothing is read, and the app goes on.
+        let pipe = match Pipe::new() {
+            Ok(pipe) => pipe,
+            Err(err) => {
+                log::error!("no pipe for reading the clipboard: {err:?}");
+                return None;
+            }
+        };
         self.inner.receive_data(mime_type.to_string(), unsafe {
             BorrowedFd::borrow_raw(pipe.write.as_raw_fd())
         });
         let fd = pipe.read;
         drop(pipe.write);
 
-        connection.flush().unwrap();
+        // The compositor's socket full, or gone: the request never left, so there is nothing
+        // to wait for.
+        if let Err(err) = connection.flush() {
+            log::error!("could not ask for the clipboard's contents: {err:?}");
+            return None;
+        }
 
         match read_fd_with_timeout(fd, PIPE_READ_TIMEOUT) {
             Ok(bytes) => Some(bytes),
