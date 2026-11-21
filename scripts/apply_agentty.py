@@ -36,7 +36,6 @@ CRATES_IO = {
     "wasm_thread": {"version": "0.3"},
     # Declared in a crate manifest, not the workspace.
     "naga": {"version": "30.0.2"},
-    "xim": {},  # already names zed-xim 0.4.0-zed on crates.io
 }
 
 # gpui_apple's build script reads these gpui sources (to generate the Metal shader header).

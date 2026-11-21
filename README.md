@@ -95,7 +95,8 @@ crates.io only takes crates.io dependencies. Where Zed builds from Git, we use t
 | `calloop` (Linux) | Zed fork | 0.14.5 | idle callbacks capped at about 10 ms per loop |
 | `khronos-egl` (Linux) | Zed fork | 6.0.0 | no panic when a failed EGL call reports success |
 | `wgpu`, `naga` (Linux) | Git, after 30.0 | 30.0.2 | newer API (`QueueDescriptor`, `has_srgb_suffix`) |
-| `zed-font-kit`, `zed-scap`, `zed-xim` | Git | Zed's crates.io releases | small fixes since |
+| `zed-font-kit`, `zed-scap` | Git | Zed's crates.io releases | small fixes since |
+| `zed-xim` (Linux, X11) | Git | not used: its client half is `crates/gpui_linux/src/linux/x11/xim` | — |
 | `oo7` (Linux) | Zed fork | 0.6 | an error when the prompt stream ends |
 | `windows-capture` (Windows, `screen-capture`) | Zed fork of 1.4.3 | 1.4.4, held in `Cargo.lock` | — (1.5 no longer builds with `zed-scap`: a dependent enabling `screen-capture` must hold it too) |
 
@@ -107,6 +108,10 @@ Each carries a `Modified for Agentty` note, as do the crate manifests:
 - `crates/gpui_apple/build.rs` — reads the bundled `gpui-src/` copy when `../gpui` isn't there
   (a published crate); the script keeps that copy identical to `crates/gpui/src`.
 - `crates/gpui_wgpu/src/{wgpu_context,wgpu_renderer,wgpu_atlas}.rs` — wgpu 30.0.2 API.
+- `crates/gpui_linux/src/linux/x11/xim.rs` and `xim/` — the XIM client, from zed-xim 0.4.0-zed (MIT,
+  `xim/LICENSE`), with a COMPOUND_TEXT decoder that knows the character sets Xlib writes and never
+  fails: zed-xim panicked on the first Cyrillic, Greek or accented letter an input method committed.
+  `x11.rs`, `x11/client.rs` and `x11/xim_handler.rs` use it.
 
 ## Tests
 

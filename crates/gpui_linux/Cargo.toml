@@ -45,7 +45,8 @@ x11 = [
     "as-raw-xcb-connection",
     "x11rb",
     "xkbcommon/x11",
-    "xim",
+    "xim-parser",
+    "encoding_rs",
     "filedescriptor",
     "open",
     "scap?/x11",
@@ -127,11 +128,9 @@ x11rb = { version = "0.13.1", features = [
     "sync",
     "dri3",
 ], optional = true }
-# WARNING: If you change this, you must also publish a new version of zed-xim to crates.io
-xim = { features = [
-    "x11rb-xcb",
-    "x11rb-client",
-], package = "zed-xim", version = "0.4.0-zed", optional = true }
+# The XIM client lives in src/linux/x11/xim (from zed-xim, with a decoder that cannot fail).
+xim-parser = { version = "0.2.2", optional = true }
+encoding_rs = { version = "0.8.35", optional = true }
 
 [target.'cfg(any(target_os = "linux", target_os = "freebsd"))'.dev-dependencies]
 gpui = { path = "../gpui", package = "agentty-gpui", default-features = false, features = ["test-support"] }

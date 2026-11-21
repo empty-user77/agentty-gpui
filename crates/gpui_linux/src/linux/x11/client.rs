@@ -1,3 +1,4 @@
+// Modified for Agentty: the XIM client is the `xim` module here, not the zed-xim crate.
 use anyhow::{Context as _, anyhow};
 use ashpd::WindowIdentifier;
 use calloop::{
@@ -20,6 +21,7 @@ use std::{
     time::{Duration, Instant},
 };
 
+use super::xim::{self, AttributeName, Client, InputStyle, X11rbClient};
 use x11rb::{
     connection::{Connection, RequestConnection},
     cursor,
@@ -36,7 +38,6 @@ use x11rb::{
     wrapper::ConnectionExt as _,
     xcb_ffi::XCBConnection,
 };
-use xim::{AttributeName, Client, InputStyle, x11rb::X11rbClient};
 use xkbc::x11::ffi::{XKB_X11_MIN_MAJOR_XKB_VERSION, XKB_X11_MIN_MINOR_XKB_VERSION};
 use xkbcommon::xkb::{self as xkbc, STATE_LAYOUT_EFFECTIVE};
 
