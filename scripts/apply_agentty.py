@@ -19,7 +19,7 @@ import re
 import sys
 import tomllib
 
-VERSION = "0.1.1"
+VERSION = "0.1.2"
 REPOSITORY = "https://github.com/empty-user77/agentty-gpui"
 
 # Zed crates in the snapshot that are not part of this workspace.
