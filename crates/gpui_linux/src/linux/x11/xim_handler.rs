@@ -1,7 +1,8 @@
+// Modified for Agentty: the XIM client is the `xim` module here, not the zed-xim crate.
 use std::default::Default;
 
+use super::xim::{self, AHashMap, AttributeName, Client, ClientError, ClientHandler, InputStyle};
 use x11rb::protocol::{Event, xproto};
-use xim::{AHashMap, AttributeName, Client, ClientError, ClientHandler, InputStyle};
 
 pub enum XimCallbackEvent {
     XimXEvent(x11rb::protocol::Event),

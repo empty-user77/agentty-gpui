@@ -111,7 +111,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "accesskit",
  "agentty-gpui-bench-metrics",
@@ -194,7 +194,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-apple"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "agentty-gpui",
  "agentty-gpui-collections",
@@ -232,7 +232,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-bench-metrics"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "criterion",
@@ -242,7 +242,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-collections"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "agentty-gpui-util",
  "indexmap",
@@ -251,7 +251,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-derive-refineable"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -260,7 +260,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-http-client"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "bytes",
@@ -277,7 +277,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-linux"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "accesskit",
  "accesskit_unix",
@@ -292,6 +292,7 @@ dependencies = [
  "bytemuck",
  "calloop",
  "calloop-wayland-source",
+ "encoding_rs",
  "filedescriptor",
  "futures",
  "libc",
@@ -313,14 +314,14 @@ dependencies = [
  "wayland-protocols-plasma",
  "wayland-protocols-wlr",
  "x11rb",
+ "xim-parser",
  "xkbcommon",
  "zed-scap",
- "zed-xim",
 ]
 
 [[package]]
 name = "agentty-gpui-macos"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "accesskit",
  "accesskit_macos",
@@ -361,7 +362,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-macros"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "agentty-gpui",
  "heck 0.5.0",
@@ -372,7 +373,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-platform"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "agentty-gpui",
  "agentty-gpui-bench-metrics",
@@ -387,14 +388,14 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-refineable"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "agentty-gpui-derive-refineable",
 ]
 
 [[package]]
 name = "agentty-gpui-scheduler"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "async-task",
  "backtrace",
@@ -409,7 +410,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-shared-string"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "schemars",
  "serde",
@@ -418,7 +419,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-sum-tree"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "agentty-gpui-zlog",
  "agentty-gpui-ztracing",
@@ -433,7 +434,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-util"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "log",
@@ -442,7 +443,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-wgpu"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "agentty-gpui",
  "agentty-gpui-collections",
@@ -470,7 +471,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-windows"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "accesskit",
  "accesskit_windows",
@@ -499,7 +500,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-zlog"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "agentty-gpui-collections",
  "anyhow",
@@ -510,7 +511,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-ztracing"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "agentty-gpui-zlog",
  "agentty-gpui-ztracing-macro",
@@ -526,20 +527,7 @@ dependencies = [
 
 [[package]]
 name = "agentty-gpui-ztracing-macro"
-version = "0.1.1"
-
-[[package]]
-name = "ahash"
-version = "0.8.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5a15f179cd60c4584b8a8c596927aadc462e27f2ca70c04e0071964a73ba7a75"
-dependencies = [
- "cfg-if",
- "const-random",
- "once_cell",
- "version_check",
- "zerocopy",
-]
+version = "0.1.2"
 
 [[package]]
 name = "aho-corasick"
@@ -1457,26 +1445,6 @@ checksum = "a06aeb73f470f66dcdbf7223caeebb85984942f22f1adb2a088cf9668146bbbc"
 dependencies = [
  "cfg-if",
  "wasm-bindgen",
-]
-
-[[package]]
-name = "const-random"
-version = "0.1.18"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "87e00182fe74b066627d63b85fd550ac2998d4b0bd86bfed477a0ae4c7c71359"
-dependencies = [
- "const-random-macro",
-]
-
-[[package]]
-name = "const-random-macro"
-version = "0.1.16"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f9d839f2a20b0aee515dc581a6172f2321f96cab76c1a38a4c584a194955390e"
-dependencies = [
- "getrandom 0.2.16",
- "once_cell",
- "tiny-keccak",
 ]
 
 [[package]]
@@ -2669,12 +2637,6 @@ checksum = "47d60b12902ba28e2730cd37e95b8c9223af2808df9e902d4df49588d1470606"
 dependencies = [
  "byteorder",
 ]
-
-[[package]]
-name = "hashbrown"
-version = "0.14.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e5274423e17b7c9fc20b6e7e208532f9b19825d82dfd615708b70edd83df41f1"
 
 [[package]]
 name = "hashbrown"
@@ -5901,15 +5863,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7694e1cfe791f8d31026952abf09c69ca6f6fa4e1a1229e18988f06a04a12dca"
 
 [[package]]
-name = "tiny-keccak"
-version = "2.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2c9d3793400a45f954c52e73d068316d76b6f4e36977e3fcebb13a2721e80237"
-dependencies = [
- "crunchy",
-]
-
-[[package]]
 name = "tiny-skia"
 version = "0.11.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7628,15 +7581,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bec9e4a500ca8864c5b47b8b482a73d62e4237670e5b5f1d6b9e3cae50f28f2b"
 
 [[package]]
-name = "xim-ctext"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2ac61a7062c40f3c37b6e82eeeef835d5cc7824b632a72784a89b3963c33284c"
-dependencies = [
- "encoding_rs",
-]
-
-[[package]]
 name = "xim-parser"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7863,20 +7807,6 @@ dependencies = [
  "windows-capture",
  "x11",
  "xcb",
-]
-
-[[package]]
-name = "zed-xim"
-version = "0.4.0-zed"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0c0b46ed118eba34d9ba53d94ddc0b665e0e06a2cf874cfa2dd5dec278148642"
-dependencies = [
- "ahash",
- "hashbrown 0.14.5",
- "log",
- "x11rb",
- "xim-ctext",
- "xim-parser",
 ]
 
 [[package]]

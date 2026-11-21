@@ -1,8 +1,10 @@
+// Modified for Agentty: the `xim` module.
 mod client;
 mod clipboard;
 mod display;
 mod event;
 mod window;
+mod xim;
 mod xim_handler;
 
 pub(crate) use client::*;
